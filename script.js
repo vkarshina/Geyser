@@ -53,20 +53,15 @@ document.addEventListener('mouseover', function(event) {
     });
 }
   else if (event.target.classList.contains('GeyserLabel')) {
-    var circleId = event.target.id.replace(' Geyser Label', '');
-    getLink(circleId)
-    .then(result => {
-      LastEruption(circleId, result);
-      setTimeout(() =>{
-          console.log('1');
-          resolve();
-      }, 1000);
-    })
-    .then(() => {
-      console.log('2')
-        ToggleVisibility();
-    });
-}
+      var circleId = event.target.id.replace(' Geyser Label', '');
+      new Promise(function(resolve) {
+          resolve(getLink(circleId))
+      }).then(function(result) {
+          return LastEruption(circleId, result)
+      }).then(function() {
+          ToggleVisibility();
+      })
+  }
 });
 
 //Generate link to request geyser info through API
@@ -92,37 +87,33 @@ function getPredictionLink(circleID){
   });
 };
 //Fetching and printing last geyser eruption
-function LastEruption(circleID, link){
-  fetch(link)
-    .then(res => res.json())
-    .then(data => {
-      const entry = data.entries[0];
-      const eruptionTime = entry.time;
-      const date = new Date(eruptionTime * 1000);
-      const timeFormatting = {
-        month: 'short', 
-        day: 'numeric',     
-        year: 'numeric',     
-        hour: '2-digit',     
-        minute: '2-digit',   
-        timeZoneName: 'short',  
-        hour12: true  
-      };
-      // Convert the date to a string in the specified time zone
-      const formattedDate = date.toLocaleString('en-US', timeFormatting);
-      const targetDiv = document.getElementById('PredictableText');
-      const targetHeader = targetDiv.querySelector('H3');
-      targetHeader.innerHTML = `${circleID} Geyser`;
-      const targetParagraph = targetDiv.querySelector('p');
-      targetParagraph.innerHTML = `Last eruption: ${formattedDate}`;
-      const target = document.getElementById('PredictableText');
-      const targetP = target.querySelector('#Prediction');
-      targetP.innerHTML = ``;
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-  };
+async function LastEruption(circleID, link){
+    const response = await fetch(link)
+    const jsonResp = await response.json()
+
+    const entry = jsonResp.entries[0];
+    const eruptionTime = entry.time;
+    const date = new Date(eruptionTime * 1000);
+    const timeFormatting = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short',
+        hour12: true
+    };
+    // Convert the date to a string in the specified time zone
+    const formattedDate = date.toLocaleString('en-US', timeFormatting);
+    const targetDiv = document.getElementById('PredictableText');
+    const targetHeader = targetDiv.querySelector('H3');
+    targetHeader.innerHTML = `${circleID} Geyser`;
+    const targetParagraph = targetDiv.querySelector('p');
+    targetParagraph.innerHTML = `Last eruption: ${formattedDate}`;
+    const target = document.getElementById('PredictableText');
+    const targetP = target.querySelector('#Prediction');
+    targetP.innerHTML = ``;
+};
 
   function PredictionEruption(link){
     fetch(link)
