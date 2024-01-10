@@ -1,0 +1,24 @@
+.Text{
+    background-color: #ffffff;
+    text-align: left;
+    position: absolute;
+    display: none;
+    border-radius: 25px;
+    border: 2px solid #000000;
+    padding: 1%; 
+}
+
+.Marker{
+    cursor: pointer;
+}
+
+.Word{
+    cursor: pointer;
+}
+
+.Label{
+    cursor: pointer;
+    pointer-events: auto; 
+    opacity: 0.0;
+    fill:black;
+}
